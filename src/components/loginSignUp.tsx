@@ -1,16 +1,19 @@
 'use client'
-import React from 'react'
+import React, { SyntheticEvent, useState } from 'react'
 import {loginSchema} from '../schema/loginSchema';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usePathname} from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
 
 
 
 type Props = {}
 
 export const LoginSignUpComponent = (props: Props) => {
+    const [showPassword, setShowPassword]= useState<boolean>(false);
     const pathname = usePathname();
     
     const submitBtnText = pathname.includes('login')?'Login':'Sign Up';
@@ -34,9 +37,12 @@ export const LoginSignUpComponent = (props: Props) => {
                         <input className='border border-black rounded-md pl-4 pr-4' type='email' {...register('email')} />
                         {errors.email && <span>{errors.email.message}</span>}
                     </div>
-                    <div className='flex flex-col'>
+                    <div className='flex flex-col relative'>
                         <span>Password</span>
-                        <input className='border border-black rounded-md pl-4 pr-4' type='password' {...register('password')} />
+                        <span className='absolute bottom-0 right-3 cursor-pointer' onClick={()=>setShowPassword(!showPassword)}>
+                            <FontAwesomeIcon icon={faEye} />
+                        </span>
+                        <input id='password' className='border border-black rounded-md pl-4 pr-4' type={showPassword?"text":"password"} {...register('password')} />
                         {errors.password && <span>{errors.password.message}</span>}
                     </div>
                 </div>
