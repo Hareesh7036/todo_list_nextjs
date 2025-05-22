@@ -1,19 +1,25 @@
 'use client'
 import LoadingComp from '@/components/loading';
-import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-type Props = {};
 
-type taskResults={
-    task : String,
-    description: String,
-    _id: any
-}
+type TaskResult = {
+  task: string;
+  description: string;
+  _id: string;
+};
 
-const CreateTaskAndShow = (props: Props) => {
-    // const [taskResults, setTaskResults] = useState<[taskResults] | null>(null);
-    const [formData, setFormData] = useState({task :'', description : ''})
+type FormData = {
+  task: string;
+  description: string;
+};
+
+const CreateTaskAndShow = () => {
+    const [formData, setFormData] = useState<FormData>({task :'', description : ''})
+    const queryClient = useQueryClient();
     const handleChange = (e :any)=>{
         setFormData((prev)=>(
             {...prev,
@@ -21,64 +27,75 @@ const CreateTaskAndShow = (props: Props) => {
         ))
     }
 
-    const fetchTasks = async()=>{
+    const fetchTasks = async():Promise<TaskResult[]> =>{
         const response = await fetch('/api/task',{
             method : 'Get',
         })
-        const data = await response.json();
         if(!response.ok){
-            console.log('fetching tasks failed!!')
-        }else{
-            console.log(data,"task data")
-            // setTaskResults(data)
-            return data;
+           throw new Error('Fetching tasks failed!');
         }
+        return await response.json();
     }
 
-    const {data, isPending, error} = useQuery({
+    const {data, isPending, error} = useQuery<TaskResult[]>({
         queryKey:['tasks'],
         queryFn:fetchTasks,
     })
-    // useEffect(()=>{
-    //     fetchTasks();
-    // },[])
+
+    const createTask = async (newTask: FormData) => {
+        const response = await fetch('/api/task', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newTask),
+        });
+        if (!response.ok) {
+        throw new Error('Creating task failed!');
+        }
+        return await response.json();
+    };
+    const mutation = useMutation({
+        mutationFn: createTask,
+        onSuccess: () => {
+        setFormData({ task: '', description: '' });
+        queryClient.invalidateQueries({ queryKey: ['tasks'] }); // 🔁 refetch
+        },
+        onError: (err) => {
+        console.error('Error creating task', err);
+        }
+    });
 
     const handleSubmit =async()=>{
-        const response =await fetch('/api/task',{
-            method : 'Post',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        });
-        const data = await response.json();
-        if(!response.ok){
-            console.error('error')
-        }else{
-            setFormData({task :'', description : ''});
-            // fetchTasks();
-            console.log('added successfully')
-        }
+        mutation.mutate(formData);
     }
     if(isPending){
         return <LoadingComp />
     }
+    if (error) return <div>Error fetching tasks</div>;
   return (
-    <div>
-        <div className='flex flex-col gap-8 justify-center items-center w-full h-dvh'>
-            <div>
+    <div className='flex gap-5'>
+        <div className='flex flex-col gap-8 justify-center items-center w-1/2'>
+            <div className='flex flex-col gap-2'>
                 <span>Task</span>
-                <input className='border ' type='text' name='task' value={formData?.task} onChange={handleChange}/>
+                <input className='border rounded px-3 border-green-500' type='text' name='task' value={formData?.task} onChange={handleChange}/>
             </div>
-            <div>
+            <div className='flex flex-col gap-2'>
                 <span>Description</span>
-                <input className='border ' type='text' name='description' value={formData?.description} onChange={handleChange} />
+                <input className='border rounded px-3 border-green-500' type='text' name='description' value={formData?.description} onChange={handleChange} />
             </div>
-            <button onClick={handleSubmit}>submit</button>
+            <button onClick={handleSubmit} disabled={mutation.isPending}>
+                {mutation.isPending ? 'Submitting...' : 'Submit'}
+            </button>
         </div>
-        {data && <div>
+        {data && <div className='flex flex-col flex-1 gap-2 p-3 h-[calc(100vh-80px)] overflow-scroll hide-scrollbar'>
                 {data.map((task:any)=>{
-                    return <div key={task._id}>
-                        <div>{task.task}</div>
-                        <div>{task.description}</div>
+                    return <div key={task._id} className=' rounded-lg p-2 shadow-md shadow-green-600'>
+                            <div className='flex justify-between items-center'>
+                                <div>{task.task}</div>
+                                <div>
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </div>
+                            </div>
+                            <div>{task.description}</div>
                         </div>
                 })}
             </div>}
