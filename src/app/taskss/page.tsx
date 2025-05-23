@@ -1,9 +1,8 @@
 'use client'
 import LoadingComp from '@/components/loading';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import TaskComponent from './components/task';
 
 
 type TaskResult = {
@@ -76,11 +75,11 @@ const CreateTaskAndShow = () => {
         <div className='flex flex-col gap-8 justify-center items-center w-1/2'>
             <div className='flex flex-col gap-2'>
                 <span>Task</span>
-                <input className='border rounded px-3 border-green-500' type='text' name='task' value={formData?.task} onChange={handleChange}/>
+                <input className='border rounded px-3 border-green-500 bg-background' type='text' name='task' value={formData?.task} onChange={handleChange}/>
             </div>
             <div className='flex flex-col gap-2'>
                 <span>Description</span>
-                <input className='border rounded px-3 border-green-500' type='text' name='description' value={formData?.description} onChange={handleChange} />
+                <input className='border rounded px-3 border-green-500 bg-background' type='text' name='description' value={formData?.description} onChange={handleChange} />
             </div>
             <button onClick={handleSubmit} disabled={mutation.isPending}>
                 {mutation.isPending ? 'Submitting...' : 'Submit'}
@@ -88,15 +87,7 @@ const CreateTaskAndShow = () => {
         </div>
         {data && <div className='flex flex-col flex-1 gap-2 p-3 h-[calc(100vh-80px)] overflow-scroll hide-scrollbar'>
                 {data.map((task:any)=>{
-                    return <div key={task._id} className=' rounded-lg p-2 shadow-md shadow-green-600'>
-                            <div className='flex justify-between items-center'>
-                                <div>{task.task}</div>
-                                <div>
-                                    <FontAwesomeIcon icon={faTrash} />
-                                </div>
-                            </div>
-                            <div>{task.description}</div>
-                        </div>
+                    return <TaskComponent key={task._id} {...task} />
                 })}
             </div>}
     </div>
