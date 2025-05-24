@@ -13,6 +13,14 @@ export async function POST(req: Request) {
 
     await connectDB();
 
+    const existingTask = await Task.findOne({ task });
+    if (existingTask) {
+      return NextResponse.json(
+        { error: "Task with this name already exists" },
+        { status: 409 } // 409 Conflict
+      );
+    }
+
     // Create new Task item
     const newTask = await Task.create({ task, description });
 
@@ -26,7 +34,6 @@ export async function POST(req: Request) {
 export async function GET() {
   try {
     await connectDB();
-
     const tasks = await Task.find().select('task description _id'); // Fetch all tasks and getting required properties
     return NextResponse.json(tasks, { status: 200 });
   } catch (error) {

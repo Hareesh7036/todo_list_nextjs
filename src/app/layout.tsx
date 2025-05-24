@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
-import Headercomp from "@/components/Headercomp";
+import HeaderClientWrapper from "@/components/headerClientWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <ReactQueryProvider>
           <div className="relative">
-            <Headercomp />
+            <HeaderClientWrapper />
             <div className="pt-[80px]">
               {children}
             </div>

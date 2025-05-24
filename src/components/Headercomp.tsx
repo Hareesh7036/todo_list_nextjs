@@ -1,4 +1,3 @@
-'use client'
 import { ThemeToggle } from '@/lib/utilities/theme-toggle';
 import { faFeather } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

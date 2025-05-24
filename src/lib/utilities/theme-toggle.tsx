@@ -1,9 +1,17 @@
+'use client'
 import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark'>(
-    (localStorage.getItem('theme') as 'light' | 'dark') || 'light'
-  );
+  const [theme, setTheme] = useState<'light' | 'dark'>( 'light');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+    const storedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (storedTheme) {
+      setTheme(storedTheme);
+    }
+  }
+  }, []);
 
   useEffect(() => {
     const root = window.document.documentElement;
