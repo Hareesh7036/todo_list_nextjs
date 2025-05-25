@@ -1,4 +1,6 @@
 'use client'
+import { faSun } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
@@ -24,11 +26,6 @@ export function ThemeToggle() {
   }, [theme]);
 
   return (
-    <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="p-2 border rounded bg-gray-200 dark:bg-gray-800"
-    >
-      Toggle Theme
-    </button>
+    <FontAwesomeIcon className="p-2 border rounded bg-gray-200 dark:bg-gray-800" icon={faSun} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
   );
 }

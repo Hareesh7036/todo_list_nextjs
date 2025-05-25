@@ -1,8 +1,7 @@
 import connectDB from "@/lib/db";
 import Task from "@/models/task";
 
-import { NextResponse } from "next/server";
-import mongoose from "mongoose";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
@@ -31,10 +30,27 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const tasks = await Task.find().select('task description _id'); // Fetch all tasks and getting required properties
+
+    const searchParams = req.nextUrl.searchParams;
+    const searchText = searchParams.get('search');
+
+    let tasks;
+
+    if (searchText) {
+      const regex = new RegExp(searchText, 'i');
+      tasks = await Task.find({
+        $or: [
+          { task: { $regex: regex } },
+          { description: { $regex: regex } },
+        ],
+      }).select('task description _id');
+    } else {
+      tasks = await Task.find().select('task description _id');
+    }
+
     return NextResponse.json(tasks, { status: 200 });
   } catch (error) {
     console.error("Error fetching tasks:", error);
