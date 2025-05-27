@@ -1,12 +1,12 @@
 'use client'
-import React, { SyntheticEvent, useState } from 'react'
+import React, {  useState } from 'react'
 import {loginSchema} from '../schema/loginSchema';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usePathname} from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
+import FontAwesomeIconWrapper from '@/lib/utilities/font-awsom-wrapper';
 
 
 
@@ -40,7 +40,7 @@ export const LoginSignUpComponent = (props: Props) => {
                     <div className='flex flex-col relative'>
                         <span>Password</span>
                         <span className='absolute bottom-0 right-3 cursor-pointer' onClick={()=>setShowPassword(!showPassword)}>
-                            <FontAwesomeIcon icon={faEye} />
+                            <FontAwesomeIconWrapper icon={faEye} />
                         </span>
                         <input id='password' className='border border-black rounded-md pl-4 pr-4' type={showPassword?"text":"password"} {...register('password')} />
                         {errors.password && <span>{errors.password.message}</span>}

@@ -1,8 +1,10 @@
+
 import { cn } from '@/lib/utilities/cn';
 import { faCircleCheck, faCircleXmark, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
+import { deleteTask, updateTask } from '../actions';
+import FontAwesomeIconWrapper from '@/lib/utilities/font-awsom-wrapper';
 
 type Props = {
     _id:string;
@@ -31,17 +33,7 @@ export default function TaskComponent({_id, task, description, index}: Props) {
         setInputDescription(e.target.value)
     }
 
-    const updateTask = async (task: FormData ) => {
-        const response = await fetch(`/api/task/${_id.toString()}`, {
-            method: 'PUT',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(task),
-        });
-        if (!response.ok) {
-        throw new Error('Updating task failed!');
-        }
-        return await response.json();
-    };
+    
     const updateMutation = useMutation({
         mutationFn: updateTask,
         onSuccess: () => {
@@ -53,16 +45,6 @@ export default function TaskComponent({_id, task, description, index}: Props) {
         }
     });
 
-    const deleteTask = async () =>{
-        const response = await fetch(`/api/task/${_id.toString()}`, {
-            method: 'DELETE',
-            headers: { "Content-Type": "application/json" },
-        });
-        if (!response.ok) {
-        throw new Error('Deleting task failed!');
-        }
-        return await response.json();
-    }
 
     const deleteMutation = useMutation({
         mutationFn: deleteTask,
@@ -72,16 +54,16 @@ export default function TaskComponent({_id, task, description, index}: Props) {
     })
 
     const handleSubmit = ()=>{
-        updateMutation.mutate({task, description:inputDescription})
+        updateMutation.mutate({_id, task, description:inputDescription})
     }
 
     const handleDelete = (e:React.MouseEvent) =>{
         e.stopPropagation();
-        deleteMutation.mutate();
+        deleteMutation.mutate(_id);
     }
 
   return (
-    <div key={_id} className=' rounded-lg p-2 shadow-md shadow-green-600' onClick={()=>setIsCardOpen(!isCardOpen)}>
+    <div key={_id} className=' rounded-lg p-2 shadow-md shadow-green-600' onClick={()=>setIsCardOpen(!isCardOpen)} title='Click to view Description'>
         <div className='flex justify-between items-center'>
             <div className='font-semibold flex gap-1'>
                 <span>{index + 1}.</span>
@@ -89,10 +71,10 @@ export default function TaskComponent({_id, task, description, index}: Props) {
             </div>
             <div className='flex gap-3'>
                 <div>
-                    <FontAwesomeIcon className=' cursor-pointer' icon={faEdit} onClick={handleEdit} />
+                    <FontAwesomeIconWrapper className=' cursor-pointer' icon={faEdit} onClick={handleEdit} title='Edit' />
                 </div>
                 <div>
-                    <FontAwesomeIcon className=' cursor-pointer' icon={faTrash} onClick={handleDelete} />
+                    <FontAwesomeIconWrapper className=' cursor-pointer' icon={faTrash} onClick={handleDelete} title='Delete' />
                 </div>
             </div>
         </div>
@@ -100,8 +82,8 @@ export default function TaskComponent({_id, task, description, index}: Props) {
             {isEditing?
             <div className='flex gap-3 items-center'>
                 <input className='border rounded px-3 border-green-500 bg-background' type='text' name='description' value={inputDescription} onChange={handleChange} />
-                <FontAwesomeIcon icon={faCircleCheck} className='cursor-pointer' onClick={handleSubmit} />
-                <FontAwesomeIcon icon={faCircleXmark} className=' cursor-pointer' onClick={()=>setIsEditing(false)} />
+                <FontAwesomeIconWrapper icon={faCircleCheck} className='cursor-pointer' onClick={handleSubmit} title='Submit' />
+                <FontAwesomeIconWrapper icon={faCircleXmark} className=' cursor-pointer' onClick={()=>setIsEditing(false)} title='Cancel' />
             </div>
             :
             description}

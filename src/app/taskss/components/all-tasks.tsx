@@ -1,25 +1,17 @@
+
 import LoadingComp from '@/components/loading'
 import { useQuery } from '@tanstack/react-query'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TaskResult } from '../schema'
 import { fetchTasks } from '../data'
 import TaskComponent from './task'
+import useDebounceValue from '@/lib/utilities/custom-hooks/debounce'
 
 type Props = {}
 
 export default function AllTasks({}: Props) {
-    const [tasksData, setTasksData] = useState<TaskResult | null>(null)
     const [searchText, setSearchText] = useState('');
-    const [debouncedSearchText, setDebouncedSearchText] = useState('');
-
-    // ⏳ Debounce effect
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-        setDebouncedSearchText(searchText);
-        }, 300); // Adjust delay as needed
-
-        return () => clearTimeout(timeout); // Cleanup on text change
-    }, [searchText]);
+    const debouncedSearchText = useDebounceValue(searchText, 500);
 
     const {data, isPending, error} = useQuery<TaskResult[]>({
         queryKey:['tasks', debouncedSearchText],
