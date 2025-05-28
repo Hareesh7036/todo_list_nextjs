@@ -1,7 +1,7 @@
 'use client'
 import { faSun } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
+import FontAwesomeIconWrapper from './font-awsom-wrapper';
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>( 'light');
@@ -26,6 +26,6 @@ export function ThemeToggle() {
   }, [theme]);
 
   return (
-    <FontAwesomeIcon className="p-2 border rounded bg-gray-200 dark:bg-gray-800" icon={faSun} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+    <FontAwesomeIconWrapper className="p-2 border rounded bg-gray-200 dark:bg-gray-800" icon={faSun} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
   );
 }
