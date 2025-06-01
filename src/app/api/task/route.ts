@@ -5,14 +5,17 @@ import Task from "@/models/task";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const {response} = await requireAuth();
-  if(response){
-    return response
+  const { response } = await requireAuth();
+  if (response) {
+    return response;
   }
   try {
     const { task, description } = await req.json(); // Use req.json() in App Router
     if (!task || !description) {
-      return NextResponse.json({ error: "Title and description are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Title and description are required" },
+        { status: 400 },
+      );
     }
 
     await connectDB();
@@ -21,7 +24,7 @@ export async function POST(req: Request) {
     if (existingTask) {
       return NextResponse.json(
         { error: "Task with this name already exists" },
-        { status: 409 } // 409 Conflict
+        { status: 409 }, // 409 Conflict
       );
     }
 
@@ -36,33 +39,33 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: NextRequest) {
-  const {response} = await requireAuth();
-  if(response){
-    return response
+  const { response } = await requireAuth();
+  if (response) {
+    return response;
   }
   try {
     await connectDB();
 
     const searchParams = req.nextUrl.searchParams;
-    const searchText = searchParams.get('search');
+    const searchText = searchParams.get("search");
 
     let tasks;
 
     if (searchText) {
-      const regex = new RegExp(searchText, 'i');
+      const regex = new RegExp(searchText, "i");
       tasks = await Task.find({
-        $or: [
-          { task: { $regex: regex } },
-          { description: { $regex: regex } },
-        ],
-      }).select('task description _id');
+        $or: [{ task: { $regex: regex } }, { description: { $regex: regex } }],
+      }).select("task description _id");
     } else {
-      tasks = await Task.find().select('task description _id');
+      tasks = await Task.find().select("task description _id");
     }
 
     return NextResponse.json(tasks, { status: 200 });
   } catch (error) {
     console.error("Error fetching tasks:", error);
-    return NextResponse.json({ error: "Failed to fetch tasks" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch tasks" },
+      { status: 500 },
+    );
   }
 }

@@ -1,31 +1,30 @@
- import mongoose from "mongoose";
+import mongoose from "mongoose";
 
- const db_name = process.env.DB_NAME;
- 
- global.mongoose = {
-    conn :null,
-    promise : null,
- }
+const db_name = process.env.DB_NAME;
 
- const connectDB= async()=>{
-    if(global.mongoose && global.mongoose.conn){
-      console.log("already connected")
-      return global.mongoose.conn
-    } else{
-      const connection_string = process.env.MONGO_URL;
+global.mongoose = {
+  conn: null,
+  promise: null,
+};
 
-      const promise = mongoose.connect(connection_string, {autoIndex:true});
+const connectDB = async () => {
+  if (global.mongoose && global.mongoose.conn) {
+    console.log("already connected");
+    return global.mongoose.conn;
+  } else {
+    const connection_string = process.env.MONGO_URL;
 
-      global.mongoose = {
-         conn : await promise,
-         promise
-      };
+    const promise = mongoose.connect(connection_string, { autoIndex: true });
 
-      console.log("connected!!")
+    global.mongoose = {
+      conn: await promise,
+      promise,
+    };
 
-      return await promise;
-    }
+    console.log("connected!!");
 
- } 
+    return await promise;
+  }
+};
 
- export default connectDB;
+export default connectDB;

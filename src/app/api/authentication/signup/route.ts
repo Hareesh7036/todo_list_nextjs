@@ -10,13 +10,19 @@ export async function POST(req: Request) {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({ error: "User already exists" }, { status: 409 });
+      return NextResponse.json(
+        { error: "User already exists" },
+        { status: 409 },
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ email, password: hashedPassword });
 
-    return NextResponse.json({ message: "Signup successful", userId: newUser._id }, { status: 201 });
+    return NextResponse.json(
+      { message: "Signup successful", userId: newUser._id },
+      { status: 201 },
+    );
   } catch (err) {
     return NextResponse.json({ error: "Signup failed" }, { status: 500 });
   }

@@ -32,9 +32,7 @@ export default function RootLayout({
         <ReactQueryProvider>
           <div className="relative">
             <HeaderClientWrapper />
-            <div className="pt-[80px]">
-              {children}
-            </div>
+            <div className="pt-[80px]">{children}</div>
           </div>
         </ReactQueryProvider>
       </body>

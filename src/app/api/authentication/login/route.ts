@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 
-const SECRET = process.env.JWT_SECRET_KEY || 'your_default_secret';
+const SECRET = process.env.JWT_SECRET_KEY || "your_default_secret";
 
 export async function POST(req: Request) {
   try {
@@ -18,10 +18,15 @@ export async function POST(req: Request) {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 },
+      );
     }
 
-    const token = jwt.sign({ userId: user._id, email: user.email }, SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user._id, email: user.email }, SECRET, {
+      expiresIn: "1h",
+    });
 
     // Set token in HTTP-only cookie
     const response = NextResponse.json({ message: "Login successful" });
