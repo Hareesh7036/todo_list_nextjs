@@ -1,4 +1,4 @@
-
+'use client'
 import LoadingComp from '@/components/loading'
 import { useQuery } from '@tanstack/react-query'
 import React, { useState } from 'react'

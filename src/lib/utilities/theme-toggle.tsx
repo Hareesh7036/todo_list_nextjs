@@ -26,6 +26,6 @@ export function ThemeToggle() {
   }, [theme]);
 
   return (
-    <FontAwesomeIconWrapper className="p-2 border rounded bg-gray-200 dark:bg-gray-800" icon={faSun} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+    <FontAwesomeIconWrapper className="p-2 border rounded bg-gray-200 dark:bg-gray-800 cursor-pointer" icon={faSun} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
   );
 }
