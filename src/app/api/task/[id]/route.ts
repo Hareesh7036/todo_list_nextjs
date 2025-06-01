@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Task from "@/models/task";
 import { Types } from 'mongoose';
+import { requireAuth } from "@/lib/auth/check-auth";
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+    const {response} = await requireAuth();
+    if(response){
+        return response
+    }
   try {
     const { id } = params;
     const { task, description } = await req.json();
@@ -35,6 +40,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(req: NextRequest) {
+    const {response} = await requireAuth();
+      if(response){
+        return response
+      }
   try {
     const id = req.nextUrl.pathname.split('/').pop(); 
 

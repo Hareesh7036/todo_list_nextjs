@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { deleteTask, updateTask } from '../actions';
 import FontAwesomeIconWrapper from '@/lib/utilities/font-awsom-wrapper';
+import { useRouter } from 'next/navigation';
+import { TaskResult } from '../schema';
 
 type Props = {
     _id:string;
@@ -12,17 +14,12 @@ type Props = {
     description:string;
     index:number;
 }
-
-type FormData = {
-  task: string;
-  description: string;
-};
-
 export default function TaskComponent({_id, task, description, index}: Props) {
     const [isCardOpen, setIsCardOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [inputDescription, setInputDescription] = useState('');
     const queryClient = useQueryClient();
+    const router = useRouter();
 
 
     const handleEdit = () =>{
@@ -35,7 +32,16 @@ export default function TaskComponent({_id, task, description, index}: Props) {
 
     
     const updateMutation = useMutation({
-        mutationFn: updateTask,
+        mutationFn:async ({_id, task, description}: TaskResult)=>{
+            try{
+                return updateTask({_id, task, description})
+            }catch (err: any) {
+            if (err.message === 'Unauthorized') {
+                router.push('/auth/login');
+            }
+            throw err;
+            }
+        },
         onSuccess: () => {
         setIsEditing(false)
         queryClient.invalidateQueries({ queryKey: ['tasks'] }); // 🔁 refetch
@@ -47,7 +53,16 @@ export default function TaskComponent({_id, task, description, index}: Props) {
 
 
     const deleteMutation = useMutation({
-        mutationFn: deleteTask,
+        mutationFn: async (_id:string)=>{
+           try{
+             return deleteTask(_id)
+           }catch (err: any) {
+            if (err.message === 'Unauthorized') {
+                router.push('/auth/login');
+            }
+            throw err;
+            }
+        },
         onSuccess:() => {
         queryClient.invalidateQueries({ queryKey: ['tasks'] }); // 🔁 refetch
         },
@@ -81,7 +96,7 @@ export default function TaskComponent({_id, task, description, index}: Props) {
         <div className={cn('overflow-hidden transition-all duration-500 ease-in-out',isCardOpen || isEditing ?'opacity-100 max-h-52':'max-h-0 opacity-0','transition-[2s]')}>
             {isEditing?
             <div className='flex gap-3 items-center'>
-                <input className='border rounded px-3 border-green-500 bg-background' type='text' name='description' value={inputDescription} onChange={handleChange} />
+                <input className='border rounded px-3 border-green-500 bg-background w-full m-[1px]' type='text' name='description' value={inputDescription} onChange={handleChange} />
                 <FontAwesomeIconWrapper icon={faCircleCheck} className='cursor-pointer' onClick={handleSubmit} title='Submit' />
                 <FontAwesomeIconWrapper icon={faCircleXmark} className=' cursor-pointer' onClick={()=>setIsEditing(false)} title='Cancel' />
             </div>

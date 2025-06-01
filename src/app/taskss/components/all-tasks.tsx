@@ -6,6 +6,7 @@ import { TaskResult } from '../schema'
 import { fetchTasks } from '../data'
 import TaskComponent from './task'
 import useDebounceValue from '@/lib/utilities/custom-hooks/debounce'
+import { useRouter } from 'next/navigation'
 
 type Props = {}
 
@@ -13,9 +14,20 @@ export default function AllTasks({}: Props) {
     const [searchText, setSearchText] = useState('');
     const debouncedSearchText = useDebounceValue(searchText, 500);
 
-    const {data, isPending, error} = useQuery<TaskResult[]>({
+    const router = useRouter();
+
+    const {data, isPending, error} = useQuery<TaskResult[], Error>({
         queryKey:['tasks', debouncedSearchText],
-        queryFn:() => fetchTasks(debouncedSearchText),
+        queryFn:async () => {
+            try {
+            return await fetchTasks(debouncedSearchText);
+            } catch (err: any) {
+            if (err.message === 'Unauthorized') {
+                router.push('/auth/login');
+            }
+            throw err;
+            }
+        },
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

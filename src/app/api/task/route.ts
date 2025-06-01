@@ -1,9 +1,14 @@
+import { requireAuth } from "@/lib/auth/check-auth";
 import connectDB from "@/lib/db";
 import Task from "@/models/task";
 
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const {response} = await requireAuth();
+  if(response){
+    return response
+  }
   try {
     const { task, description } = await req.json(); // Use req.json() in App Router
     if (!task || !description) {
@@ -31,6 +36,10 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: NextRequest) {
+  const {response} = await requireAuth();
+  if(response){
+    return response
+  }
   try {
     await connectDB();
 

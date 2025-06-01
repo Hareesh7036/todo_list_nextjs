@@ -7,7 +7,10 @@ export const createTask = async (newTask: FormData) => {
             body: JSON.stringify(newTask),
         });
         if (!response.ok) {
-        throw new Error('Creating task failed!');
+            if (response.status === 401) {
+                throw new Error('Unauthorized');
+            }
+            throw new Error('Creating task failed!');
         }
         return await response.json();
     };
@@ -19,7 +22,10 @@ export const updateTask = async ({_id, task, description}: TaskResult ) => {
             body: JSON.stringify({task,description}),
         });
         if (!response.ok) {
-        throw new Error('Updating task failed!');
+            if (response.status === 401) {
+                throw new Error('Unauthorized');
+            }
+            throw new Error('Updating task failed!');
         }
         return await response.json();
     };
@@ -30,7 +36,10 @@ export const deleteTask = async (_id:string) =>{
             headers: { "Content-Type": "application/json" },
         });
         if (!response.ok) {
-        throw new Error('Deleting task failed!');
-        }
+            if (response.status === 401) {
+                throw new Error('Unauthorized');
+            }
+            throw new Error('Deleting task failed!');
+            }
         return await response.json();
     }
