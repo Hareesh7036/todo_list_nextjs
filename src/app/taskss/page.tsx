@@ -1,10 +1,13 @@
 import React from 'react'
-import CreateTaskAndShow from './components/task-client-wrapper'
+import TaskForm from './form'
+import AllTasks from './components/all-tasks'
 
-type Props = {}
+export default function TaskMain() {
 
-export default function TaskMain({}: Props) {
   return (
-    <CreateTaskAndShow />
+    <div className='flex gap-5'>
+        <TaskForm />
+        <AllTasks />   
+    </div>
   )
 }
