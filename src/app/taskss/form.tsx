@@ -4,14 +4,25 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { FormData } from './schema'
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createTask } from './actions';
+import { useRouter } from 'next/navigation';
 
 
 export default function TaskForm() {
     const {register, handleSubmit, formState:{errors}} = useForm<FormData>();
     const queryClient = useQueryClient();
+    const router = useRouter();
     
         const mutation = useMutation({
-            mutationFn: createTask,
+            mutationFn: async(data:FormData)=>{
+                try{
+                    return createTask(data)
+                }catch (err: any) {
+                if (err.message === 'Unauthorized') {
+                    router.push('/auth/login');
+                }
+            throw err;
+            }
+            },
             onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tasks'] }); // 🔁 refetch
             },
